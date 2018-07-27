@@ -13,13 +13,7 @@ class TextBoxComponent extends Component {
     }
 }
 
-const mapStateToProps = (state)  => {
-    return {
-        text : state.text,
-        currentLocation: state.currentLocation
-    }
-};
 
 
-export default connect(
-    mapStateToProps, null)(TextBoxComponent);
+
+export default TextBoxComponent;

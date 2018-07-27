@@ -1,36 +1,31 @@
+// liraries
 import React, { Component } from "react";
 import { View, WebView, StyleSheet, Image } from "react-native";
-import TextInputComponent from "./components/TextInputComponent";
+import { createStackNavigator } from "react-navigation";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+
+//components
+import Main from "./components/views/Main";
+import Map from "./components/views/Map";
 import Autocomplete from "./components/Autocomplete";
-import { Provider } from "react-redux";
-import TextBoxComponent from "./components/TextBoxComponent";
-import {store} from "./redux/Store";
+
+const RootStack  = createStackNavigator({
+    Home: Autocomplete,
+    Maps: Map
+},
+    {initialRouteName: 'Home'});
+
 
 class App extends Component {
   render() {
     return (
-      <Provider store={store}>
-        <View style={styles.paddingTop}>
-            <Autocomplete />
-          <TextBoxComponent />
-          <TextInputComponent />
-        </View>
-      </Provider>
+
+        <RootStack  />
+
     );
   }
 }
 
-const styles = StyleSheet.create({
-  paddingTop: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-    5050:{
-        width: 50, height: 50, alignSelf: 'center'
-    }
-});
+
 
 export default App;
