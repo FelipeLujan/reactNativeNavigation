@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Image, Text, View} from "react-native";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {connect} from 'react-redux';
+import {setPlaceholder} from "../redux/actions/currentLocationAction";
 
 const homePlace = { description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } }};
 const workPlace = { description: 'Work', geometry: { location: { lat: 48.8496818, lng: 2.2940881 } }};
@@ -20,14 +21,16 @@ class Autocomplete extends Component {
                     fetchDetails={true}
                     renderDescription={(row) => row.description} // custom description render
                     onPress={(data, details = null) => { // 'details' is provided when fetchDetails = true
-                        console.log(data);
-                        console.log(details);
+                        console.log(data['description']);
+                        this.props.setPlaceholder(data['description'])
                     }}
                     getDefaultValue={() => {
                         return ''; // text input default value
                     }}
                     query={{
-                        // available options: https://developers.google.com/places/web-service/autocomplete
+                        // available
+                        //
+                        // options: https://developers.google.com/places/web-service/autocomplete
                         key: 'AIzaSyATddP1Cm1SQ3JJzHamb1PONDAuMr4vxMc',
                         language: 'en', // language of the results
                         types: '(cities)' // default: 'geocode'
@@ -53,7 +56,7 @@ class Autocomplete extends Component {
                         types: 'food'
                     }}
 
-                    filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
+                    filterReverseGeocodingByTypes={['point_of_interest', 'neighborhood', 'route', 'political', 'street_address']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
                     predefinedPlaces={[homePlace, workPlace]}
 
                     debounce={0} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
@@ -63,4 +66,4 @@ class Autocomplete extends Component {
     }
 }
 
-export default connect(null,null)(Autocomplete);
+export default connect(null,{setPlaceholder})(Autocomplete);

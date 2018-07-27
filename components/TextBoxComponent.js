@@ -4,16 +4,6 @@ import {View, Text} from 'react-native'
 
 class TextBoxComponent extends Component {
 
-    componentDidMount() {
-        console.log(this.props)
-    }
-
-
-    componentWillUpdate(nextProps, nextState) {
-        console.log(nextProps)
-    }
-
-
     render() {
         return (
             <View>

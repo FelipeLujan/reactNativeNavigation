@@ -26,9 +26,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center",
-      width: 500
-  }
+    alignItems: "center"
+  },
+    5050:{
+        width: 50, height: 50, alignSelf: 'center'
+    }
 });
 
 export default App;
