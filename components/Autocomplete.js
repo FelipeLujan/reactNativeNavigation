@@ -7,11 +7,11 @@ import { Constants, Location, Permissions } from "expo";
 
 const homePlace = {
   description: "Home",
-  geometry: { location: { lat: 48.8152937, lng: 2.4597668 } }
+  geometry: { location: { lat: 6.21209, lng: 2.4597668 } }
 };
-const workPlace = {
-  description: "Work",
-  geometry: { location: { lat: 48.8496818, lng: 2.2940881 } }
+const exito = {
+  description: "exito",
+  geometry: { location: { lat: 48.8496818, lng: -75.574745 } }
 };
 
 class Autocomplete extends Component {
@@ -35,7 +35,7 @@ class Autocomplete extends Component {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
       this.setState({
-        errorMessage: "Permission to access location was denied"
+        errorMessage: "Your location could not be obtained."
       });
     }
 
@@ -44,11 +44,11 @@ class Autocomplete extends Component {
   };
 
   render() {
-    let text = "Waiting..";
+    let currentLocation = "Waiting..";
     if (this.state.errorMessage) {
-      text = this.state.errorMessage;
+      currentLocation = this.state.errorMessage;
     } else if (this.state.location) {
-      text = this.state.location;
+      currentLocation = this.state.location;
     }
 
     return (
@@ -60,16 +60,22 @@ class Autocomplete extends Component {
         listViewDisplayed="auto" // true/false/undefined
         fetchDetails={true}
         renderDescription={row => row.description} // custom description render
-        onPress={(data, details = null) => {
-          // 'details' is provided when fetchDetails = true
-          console.log(details);
-          this.props.navigation.navigate("Maps", {
-            destination: data["description"],
-            currentLocation: {
-              latitude: text["coords"]["latitude"],
-              longitude: text["coords"]["longitude"]
-            }
-          });
+        onPress={(data, destinationDetails = null) => {
+
+            console.log(destinationDetails)
+            this.props.navigation.navigate("test", {
+
+                placeName: data.structured_formatting['main_text'],
+                placeLocation: data.structured_formatting['secondary_text'],
+                destination: {
+                    latitude: destinationDetails['geometry']['location']['lat'],
+                    longitude: destinationDetails['geometry']['location']['lng']
+                },
+                currentLocation: {
+                    latitude: currentLocation["coords"]["latitude"],
+                    longitude: currentLocation["coords"]["longitude"]
+                }
+            });
         }}
         getDefaultValue={() => {
           return ""; // text input default value
@@ -79,8 +85,8 @@ class Autocomplete extends Component {
           //
           // options: https://developers.google.com/places/web-service/autocomplete
           key: "AIzaSyATddP1Cm1SQ3JJzHamb1PONDAuMr4vxMc",
-          language: "en", // language of the results
-          types: "(cities)" // default: 'geocode'
+          language: "es", // language of the results
+          types: "establishment" // default: 'geocode'
         }}
         styles={{
           description: {
@@ -110,7 +116,7 @@ class Autocomplete extends Component {
           "political",
           "street_address"
         ]} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-        predefinedPlaces={[homePlace, workPlace]}
+        predefinedPlaces={[homePlace, exito]}
         debounce={0} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
       />
     );

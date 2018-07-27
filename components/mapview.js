@@ -3,10 +3,11 @@ import { Dimensions, StyleSheet } from 'react-native';
 import MapView from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 
+//initial view is hardcoded to medellin.
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
-const LATITUDE = 6.2038404;
-const LONGITUDE = -75.6024592;
+const LATITUDE = 6.2037021
+const LONGITUDE = -75.596802;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
@@ -16,17 +17,25 @@ class MapViewComponent extends Component {
 
     constructor(props) {
         super(props);
+        const currentLocation = this.props.navigation.getParam('currentLocation', 'obj')
+        const destination = this.props.navigation.getParam('destination', 'obj')
 
-        // AirBnB's Office, and Apple Park
+        //start and and points to adjust the view
         this.state = {
             coordinates: [
                 {
-                    latitude: 6.2038404,
-                    longitude: -75.6024592,
+                    latitude: currentLocation['latitude'],
+                    longitude: currentLocation['longitude'],
                 },
-                "6.212275052208038,-75.57644583284855"
+                {
+                    latitude: destination['latitude'],
+                    longitude: destination['longitude'],
+                },
             ],
         };
+
+        console.log(currentLocation)
+        console.log(destination)
 
         this.mapView = null;
     }
@@ -63,7 +72,7 @@ class MapViewComponent extends Component {
                         destination={this.state.coordinates[this.state.coordinates.length-1]}
                         apikey={GOOGLE_MAPS_APIKEY}
                         strokeWidth={3}
-                        strokeColor="hotpink"
+                        strokeColor="purple"
                         onStart={(params) => {
                             console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
                         }}

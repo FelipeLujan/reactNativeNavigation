@@ -11,9 +11,6 @@ class Map extends Component {
 
     render() {
 
-
-
-
         return (
             <View>
                 <Text>{this.props.navigation.getParam('destination', 'place')}</Text>
