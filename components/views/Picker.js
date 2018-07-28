@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import Autocomplete from "../Autocomplete";
 import TextBoxComponent from "../TextBoxComponent";
+import { Speech } from "expo";
 
 class Picker extends Component {
   constructor(props) {
@@ -17,6 +18,8 @@ class Picker extends Component {
     this.state = {
       response: ""
     };
+    
+
   }
 
   componentWillMount() {
@@ -34,7 +37,16 @@ class Picker extends Component {
     },${this.currentLongitude}&destinations=${this.destinationLatitude},${
       this.destinationLongitude
     }&key=AIzaSyCQ6DpQrBCYZryBBLlFDOaiAKIxMN523_E`;
-    console.log(URL);
+      const talkThatTalk = () => {
+          Speech.speak(
+              `${
+                  this.props.navigation.state.params["placeName"]
+                  }, sure, its located in ${
+                  this.props.navigation.state.params["placeLocation"]
+                  }.`,
+              { rate: 0.8 }
+          );
+      };
 
     fetch(URL)
       .then(data => {
@@ -42,7 +54,9 @@ class Picker extends Component {
       })
       .then(response => {
         this.setState({ response: response });
+
       })
+        .then(talkThatTalk())
 
       .catch(err => {
         console.log(err);
@@ -63,11 +77,22 @@ class Picker extends Component {
           </Text>
         </View>
 
-        <Button title={'MapView'}
+        <Button
+          title={"MapView"}
           onPress={() => {
             this.props.navigation.navigate("Maps", {
-                destination: this.destination,
-                currentLocation: this.currentLocation
+              destination: this.destination,
+              currentLocation: this.currentLocation
+            });
+          }}
+        />
+
+        <Button
+          title={"Webview"}
+          onPress={() => {
+            this.props.navigation.navigate("webviewmap", {
+              destination: this.destination,
+              currentLocation: this.currentLocation
             });
           }}
         />

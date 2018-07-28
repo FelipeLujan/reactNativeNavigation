@@ -21,6 +21,7 @@ class Autocomplete extends Component {
   };
 
   componentDidMount() {
+    //get user location
     if (Platform.OS === "android" && !Constants.isDevice) {
       this.setState({
         errorMessage:
@@ -44,7 +45,7 @@ class Autocomplete extends Component {
   };
 
   render() {
-    let currentLocation = "Waiting..";
+    let currentLocation = "Please wait whi your location is determined";
     if (this.state.errorMessage) {
       currentLocation = this.state.errorMessage;
     } else if (this.state.location) {
@@ -61,21 +62,32 @@ class Autocomplete extends Component {
         fetchDetails={true}
         renderDescription={row => row.description} // custom description render
         onPress={(data, destinationDetails = null) => {
-
-            console.log(destinationDetails)
-            this.props.navigation.navigate("test", {
-
-                placeName: data.structured_formatting['main_text'],
-                placeLocation: data.structured_formatting['secondary_text'],
+          if (
+            currentLocation === "Your location could not be obtained." ||
+            currentLocation === "Please wait while your location is determined"
+          ) {
+            alert(currentLocation);
+          } else {
+            if (currentLocation["coords"]["latitude"]===undefined) {
+              alert(
+                "An error has occurred"
+              );
+            } else {
+                console.log(currentLocation["coords"]["latitude"])
+              this.props.navigation.navigate("test", {
+                placeName: data.structured_formatting["main_text"],
+                placeLocation: data.structured_formatting["secondary_text"],
                 destination: {
-                    latitude: destinationDetails['geometry']['location']['lat'],
-                    longitude: destinationDetails['geometry']['location']['lng']
+                  latitude: destinationDetails["geometry"]["location"]["lat"],
+                  longitude: destinationDetails["geometry"]["location"]["lng"]
                 },
                 currentLocation: {
-                    latitude: currentLocation["coords"]["latitude"],
-                    longitude: currentLocation["coords"]["longitude"]
+                  latitude: currentLocation["coords"]["latitude"],
+                  longitude: currentLocation["coords"]["longitude"]
                 }
-            });
+              });
+            }
+          }
         }}
         getDefaultValue={() => {
           return ""; // text input default value
@@ -85,8 +97,8 @@ class Autocomplete extends Component {
           //
           // options: https://developers.google.com/places/web-service/autocomplete
           key: "AIzaSyATddP1Cm1SQ3JJzHamb1PONDAuMr4vxMc",
-          language: "es", // language of the results
-          types: "establishment" // default: 'geocode'
+          language: "en", // language of the results
+          types: "geocode" // default: 'geocode'
         }}
         styles={{
           description: {
@@ -96,7 +108,7 @@ class Autocomplete extends Component {
             color: "#1faadb"
           }
         }}
-        currentLocation={true} // Will add a 'Current location' button at the top of the predefined places list
+        currentLocation={false} // Will add a 'Current location' button at the top of the predefined places list
         currentLocationLabel="Current location"
         nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
         GoogleReverseGeocodingQuery={
@@ -116,7 +128,7 @@ class Autocomplete extends Component {
           "political",
           "street_address"
         ]} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-        predefinedPlaces={[homePlace, exito]}
+        predefinedPlaces={[]}
         debounce={0} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
       />
     );
