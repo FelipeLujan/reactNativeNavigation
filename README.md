@@ -1,4 +1,5 @@
-TODO: refine search results to display only nearby POIs
+TODO: refine search results to display only nearby POIs.
+
 TODO: correctly parse response from google distanceMatrix API in order to display distance and ETA once a destination is chosen.
 
 
