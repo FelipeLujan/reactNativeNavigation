@@ -1,15 +1,6 @@
+//libraries
 import React, { Component } from "react";
-import {
-  Dimensions,
-  StyleSheet,
-  View,
-  ActivityIndicator,
-  WebView,
-  Button,
-  Text
-} from "react-native";
-import Autocomplete from "../Autocomplete";
-import TextBoxComponent from "../TextBoxComponent";
+import {  View, Button, Text } from "react-native";
 import { Speech } from "expo";
 
 class Picker extends Component {
@@ -18,8 +9,6 @@ class Picker extends Component {
     this.state = {
       response: ""
     };
-    
-
   }
 
   componentWillMount() {
@@ -27,46 +16,32 @@ class Picker extends Component {
       "currentLocation"
     ];
     this.destination = this.props.navigation.state.params["destination"];
-    this.currentLatitude = this.currentLocation["latitude"];
-    this.currentLongitude = this.currentLocation["longitude"];
-    this.destinationLatitude = this.destination["latitude"];
-    this.destinationLongitude = this.destination["longitude"];
 
-    let URL = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${
-      this.currentLatitude
-    },${this.currentLongitude}&destinations=${this.destinationLatitude},${
-      this.destinationLongitude
-    }&key=AIzaSyCQ6DpQrBCYZryBBLlFDOaiAKIxMN523_E`;
-      const talkThatTalk = () => {
-          Speech.speak(
-              `${
-                  this.props.navigation.state.params["placeName"]
-                  }, sure, its located in ${
-                  this.props.navigation.state.params["placeLocation"]
-                  }.`,
-              { rate: 0.8 }
-          );
-      };
+    const talkThatTalk = () => {
+      Speech.speak(
+        `${
+          this.props.navigation.state.params["placeName"]
+        }, sure, its located in ${
+          this.props.navigation.state.params["placeLocation"]
+        }.`,
+        { rate: 0.8 }
+      );
+    };
+    console.log(this.props.navigation.params);
 
-    fetch(URL)
-      .then(data => {
-        return data.json();
-      })
-      .then(response => {
-        this.setState({ response: response });
-
-      })
-        .then(talkThatTalk())
-
-      .catch(err => {
-        console.log(err);
-      });
+    talkThatTalk();
   }
 
   render() {
-    console.log("response is ", this.props.navigation.state);
     return (
-      <View>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
         <View>
           <Text>{this.props.navigation.state.params["placeName"]} </Text>
         </View>
@@ -78,7 +53,7 @@ class Picker extends Component {
         </View>
 
         <Button
-          title={"MapView"}
+          title={"Overall route view (MapView)"}
           onPress={() => {
             this.props.navigation.navigate("Maps", {
               destination: this.destination,
@@ -88,7 +63,7 @@ class Picker extends Component {
         />
 
         <Button
-          title={"Webview"}
+          title={"Detailed route view (Webview)"}
           onPress={() => {
             this.props.navigation.navigate("webviewmap", {
               destination: this.destination,
@@ -101,27 +76,6 @@ class Picker extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  paddingTop: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  5050: {
-    width: 50,
-    height: 50,
-    alignSelf: "center"
-  },
-  container: {
-    flex: 1,
-    justifyContent: "center"
-  },
-  horizontal: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10
-  }
-});
+
 
 export default Picker;

@@ -1,18 +1,8 @@
+//libraries
 import React, { Component } from "react";
-import { Image, Text, View, Platform } from "react-native";
+import {  Platform } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import { connect } from "react-redux";
-import { setPlaceholder } from "../redux/actions/currentLocationAction";
 import { Constants, Location, Permissions } from "expo";
-
-const homePlace = {
-  description: "Home",
-  geometry: { location: { lat: 6.21209, lng: 2.4597668 } }
-};
-const exito = {
-  description: "exito",
-  geometry: { location: { lat: 48.8496818, lng: -75.574745 } }
-};
 
 class Autocomplete extends Component {
   state = {
@@ -39,19 +29,11 @@ class Autocomplete extends Component {
         errorMessage: "Your location could not be obtained."
       });
     }
-
     let location = await Location.getCurrentPositionAsync({});
     this.setState({ location });
   };
 
   render() {
-    let currentLocation = "Please wait whi your location is determined";
-    if (this.state.errorMessage) {
-      currentLocation = this.state.errorMessage;
-    } else if (this.state.location) {
-      currentLocation = this.state.location;
-    }
-
     return (
       <GooglePlacesAutocomplete
         placeholder="Search"
@@ -62,32 +44,8 @@ class Autocomplete extends Component {
         fetchDetails={true}
         renderDescription={row => row.description} // custom description render
         onPress={(data, destinationDetails = null) => {
-          if (
-            currentLocation === "Your location could not be obtained." ||
-            currentLocation === "Please wait while your location is determined"
-          ) {
-            alert(currentLocation);
-          } else {
-            if (currentLocation["coords"]["latitude"]===undefined) {
-              alert(
-                "An error has occurred"
-              );
-            } else {
-                console.log(currentLocation["coords"]["latitude"])
-              this.props.navigation.navigate("test", {
-                placeName: data.structured_formatting["main_text"],
-                placeLocation: data.structured_formatting["secondary_text"],
-                destination: {
-                  latitude: destinationDetails["geometry"]["location"]["lat"],
-                  longitude: destinationDetails["geometry"]["location"]["lng"]
-                },
-                currentLocation: {
-                  latitude: currentLocation["coords"]["latitude"],
-                  longitude: currentLocation["coords"]["longitude"]
-                }
-              });
-            }
-          }
+          //grab the destination data, coords, name of the place, etc
+          this.onPress(data, destinationDetails);
         }}
         getDefaultValue={() => {
           return ""; // text input default value
@@ -97,7 +55,7 @@ class Autocomplete extends Component {
           //
           // options: https://developers.google.com/places/web-service/autocomplete
           key: "AIzaSyATddP1Cm1SQ3JJzHamb1PONDAuMr4vxMc",
-          language: "en", // language of the results
+          language: "es", // language of the results
           types: "geocode" // default: 'geocode'
         }}
         styles={{
@@ -111,11 +69,7 @@ class Autocomplete extends Component {
         currentLocation={false} // Will add a 'Current location' button at the top of the predefined places list
         currentLocationLabel="Current location"
         nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-        GoogleReverseGeocodingQuery={
-          {
-            // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-          }
-        }
+        GoogleReverseGeocodingQuery={{}}
         GooglePlacesSearchQuery={{
           // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
           rankby: "distance",
@@ -129,9 +83,68 @@ class Autocomplete extends Component {
           "street_address"
         ]} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
         predefinedPlaces={[]}
-        debounce={0} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+        debounce={0}
       />
     );
+  }
+
+  onPress(data, destinationDetails) {
+    //ckeck if the current location and destination info is complete, if so, call onNavigate to go to the next screen
+    let currentLocation = "Please wait while your location is determined";
+
+    if (this.state.errorMessage) {
+      currentLocation = this.state.errorMessage;
+    } else if (this.state.location) {
+      currentLocation = this.state.location;
+    }
+    if (
+      currentLocation === "Your location could not be obtained." ||
+      currentLocation === "Please wait while your location is determined"
+    ) {
+      alert(currentLocation);
+    } else {
+      if (currentLocation["coords"]["latitude"] === undefined) {
+        alert("An error has occurred");
+      } else {
+        this.onNavigate(data, destinationDetails, currentLocation);
+      }
+    }
+  }
+
+  onNavigate(data, destinationDetails, currentLocation) {
+    //grab the destinationDetails,currentLocation and pass them as props to the next screen
+
+    //TODO: correctly parse the response from distanceMatrix web service in order to get the travel time as string or number
+    // let URL = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${
+    //     currentLocation["coords"]["latitude"]
+    //     },${currentLocation["coords"]["longitude"]}&destinations=${destinationDetails["geometry"]["location"]["lat"]},${
+    //     destinationDetails["geometry"]["location"]["lng"]
+    //     }&key=AIzaSyCQ6DpQrBCYZryBBLlFDOaiAKIxMN523_E`;
+    // fetch(URL)
+    //     .then(data => {
+    //         return data.json();
+    //     })
+    //     .then(response => {
+    //         this.setState({ ETA: response });
+    //     })
+    //     .catch(err => {
+    //         console.log(err);
+    //     });
+
+    //grab all coordinates and pass them along the name of the destination and is context
+    this.props.navigation.navigate("picker", {
+      placeName: data.structured_formatting["main_text"],
+      placeLocation: data.structured_formatting["secondary_text"],
+      destination: {
+        latitude: destinationDetails["geometry"]["location"]["lat"],
+        longitude: destinationDetails["geometry"]["location"]["lng"]
+      },
+      currentLocation: {
+        latitude: currentLocation["coords"]["latitude"],
+        longitude: currentLocation["coords"]["longitude"]
+      },
+      ETA: { ETA: this.state.ETA }
+    });
   }
 }
 

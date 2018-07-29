@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, WebView} from 'react-native'
+import { WebView} from 'react-native'
 
 class WebviewMap extends Component {
     constructor(props) {
